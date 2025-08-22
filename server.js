@@ -22,7 +22,16 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
-// CSRF protection
+// Routes that don't need CSRF protection
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Server is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// CSRF protection (applied after the health check route)
 app.use(csurf({ cookie: true }));
 
 // Routes
@@ -57,15 +66,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({
     success: false,
     error: 'Server Error'
-  });
-});
-
-// Health check route that doesn't require database
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'Server is running',
-    timestamp: new Date().toISOString()
   });
 });
 

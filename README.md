@@ -27,8 +27,20 @@ A modern job board platform built with cutting-edge web technologies.
 1. Push your code to a GitHub repository
 2. Sign up/log in to Vercel
 3. Import your repository
-4. Configure environment variables in Vercel dashboard
+4. Configure environment variables in Vercel dashboard:
+   - `MONGODB_URI` - Your MongoDB connection string
+   - `JWT_SECRET` - Your JWT secret key
+   - `COOKIE_SECRET` - Your cookie secret for CSRF protection
 5. Deploy!
+
+### Environment Variables
+Create a `.env` file in the root directory with the following variables:
+```
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+COOKIE_SECRET=your_cookie_secret
+PORT=3000
+```
 
 ### Manual Deployment
 1. Build the project with `npm run build`
@@ -40,6 +52,15 @@ A modern job board platform built with cutting-edge web technologies.
 - `POST /api/jobs` - Create a new job listing
 - `PUT /api/jobs/:id` - Update a job listing
 - `DELETE /api/jobs/:id` - Delete a job listing
+- `GET /api/csrf/token` - Get CSRF token for forms
+- `GET /health` - Health check endpoint
+
+## Troubleshooting
+If you encounter a 500 Internal Server Error:
+1. Check that all required environment variables are set
+2. Verify your MongoDB connection string is correct
+3. Check Vercel logs for specific error messages
+4. Ensure your MongoDB database is accessible from Vercel
 
 ## Contributing
 Contributions are welcome! Please read our contributing guidelines before submitting pull requests.

@@ -10,8 +10,11 @@ const connectDB = require('./config/db');
 
 const app = express();
 
-// Connect to database
-connectDB();
+// Connect to database (but don't fail the entire app if DB connection fails)
+connectDB().catch(err => {
+  console.error('Failed to connect to database:', err.message);
+  // In a real application, you might want to set a flag to indicate DB connection status
+});
 
 // Middleware
 app.use(helmet());
@@ -54,6 +57,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({
     success: false,
     error: 'Server Error'
+  });
+});
+
+// Health check route that doesn't require database
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Server is running',
+    timestamp: new Date().toISOString()
   });
 });
 

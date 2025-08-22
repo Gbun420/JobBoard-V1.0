@@ -1,21 +1,22 @@
 const { z } = require('zod');
 const Job = require('../models/Job');
 
-// Define the job schema for validation
-const JobSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  company: z.string().min(1, "Company is required"),
-  location: z.string().min(1, "Location is required"),
-  salary: z.string().optional(),
-  jobType: z.enum(['Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship']),
-  experienceLevel: z.enum(['Entry', 'Mid', 'Senior', 'Executive']),
-  closingDate: z.string().optional()
-});
+// Helper function to check if database is connected
+const isDatabaseConnected = () => {
+  const mongoose = require('mongoose');
+  return mongoose.connection.readyState === 1; // 1 means connected
+};
 
 // Get all jobs
 const getAllJobs = async (req, res) => {
   try {
+    if (!isDatabaseConnected()) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database connection unavailable'
+      });
+    }
+    
     const jobs = await Job.find().sort({ postedDate: -1 });
     res.status(200).json({
       success: true,
@@ -34,6 +35,13 @@ const getAllJobs = async (req, res) => {
 // Get single job
 const getJobById = async (req, res) => {
   try {
+    if (!isDatabaseConnected()) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database connection unavailable'
+      });
+    }
+    
     const job = await Job.findById(req.params.id);
     
     if (!job) {
@@ -65,6 +73,13 @@ const getJobById = async (req, res) => {
 // Create new job
 const createJob = async (req, res) => {
   try {
+    if (!isDatabaseConnected()) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database connection unavailable'
+      });
+    }
+    
     // Validate input using Zod
     const validatedData = JobSchema.parse(req.body);
     
@@ -115,6 +130,13 @@ const createJob = async (req, res) => {
 // Update job
 const updateJob = async (req, res) => {
   try {
+    if (!isDatabaseConnected()) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database connection unavailable'
+      });
+    }
+    
     // Validate input using Zod (partial validation for updates)
     const updateData = JobSchema.partial().parse(req.body);
     
@@ -187,6 +209,13 @@ const updateJob = async (req, res) => {
 // Delete job
 const deleteJob = async (req, res) => {
   try {
+    if (!isDatabaseConnected()) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database connection unavailable'
+      });
+    }
+    
     const job = await Job.findByIdAndDelete(req.params.id);
     
     if (!job) {
@@ -214,6 +243,18 @@ const deleteJob = async (req, res) => {
     });
   }
 };
+
+// Job schema for validation
+const JobSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  company: z.string().min(1, "Company is required"),
+  location: z.string().min(1, "Location is required"),
+  salary: z.string().optional(),
+  jobType: z.enum(['Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship']),
+  experienceLevel: z.enum(['Entry', 'Mid', 'Senior', 'Executive']),
+  closingDate: z.string().optional()
+});
 
 module.exports = {
   getAllJobs,

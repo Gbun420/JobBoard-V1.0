@@ -1,4 +1,5 @@
 const express = require('express');
+const csrfMiddleware = require('../../middleware/csrfMiddleware');
 const {
   getAllJobs,
   getJobById,
@@ -8,6 +9,9 @@ const {
 } = require('../controllers/jobController');
 
 const router = express.Router();
+
+// Apply CSRF middleware to routes that modify data
+router.use(csrfMiddleware);
 
 router.route('/')
   .get(getAllJobs)

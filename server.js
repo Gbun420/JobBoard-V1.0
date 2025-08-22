@@ -5,7 +5,6 @@ const helmet = require('helmet');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(helmet());
@@ -17,14 +16,8 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to JobBoard API' });
 });
 
-// Job listings route
-app.get('/api/jobs', (req, res) => {
-  res.json({ message: 'Get all job listings' });
-});
+// Job routes
+app.use('/api/jobs', require('./api/routes/jobs'));
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
+// Vercel serverless function handler
 module.exports = app;
